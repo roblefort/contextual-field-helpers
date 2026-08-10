@@ -107,7 +107,6 @@
     <ul class="list-disc pl-5 mt-2 space-y-1">
       <li>Switching EN/ES at the top now re-renders the popups to show only that language — matching the page's active locale instead of stacking both languages.</li>
       <li>The switch also re-renders page labels via a small <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">data-i18n</code> dictionary, standing in for what <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">I18n.locale</code> + normal Rails view translations would do server-side.</li>
-      <li><strong>Design change from the previous version:</strong> hints used to always show both languages in one panel. Now the popup content follows the page's selected locale, same as the rest of the UI. Say the word if you want the real helper/Stimulus controller updated to match this behavior.</li>
     </ul>
   </div>
 
