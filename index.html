@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Hint — Prototype (Tailwind 4)</title>
+
+<!-- Tailwind 4 via Play CDN, same approach as the Financial Overview prototype.
+     In the real codebase this is the compiled tailwindcss-rails v4.x stylesheet. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    --color-brand: #088576;
+    --color-brand-dark: #066c61;
+    --color-brand-soft: #e0f0ed;
+  }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-6">
+
+<div class="max-w-2xl mx-auto">
+
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8">
+
+    <h1 class="text-2xl font-semibold text-brand mb-1">New Expediente</h1>
+    <p class="text-sm text-slate-500 mb-8">Field hint prototype — click the ? icons.</p>
+
+    <form class="space-y-6">
+
+      <!-- Field with hint -->
+      <div>
+        <label for="status" class="flex items-center text-sm font-medium text-slate-700 mb-1.5">
+          Status
+          <span class="relative inline-block ml-1" data-controller="field-hint">
+            <button
+              type="button"
+              class="field-hint__trigger inline-flex items-center justify-center w-[18px] h-[18px] rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] leading-none hover:border-brand hover:text-brand transition"
+              aria-label="Field help"
+              aria-expanded="false"
+              data-field-hint-target="trigger"
+              data-action="field-hint#toggle"
+            >?</button>
+            <div
+              class="field-hint__panel hidden absolute z-20 top-6 left-0 w-64 p-3 bg-white border border-slate-200 rounded-lg shadow-lg text-sm"
+              data-field-hint-target="panel"
+            >
+              <p class="text-slate-800 mb-1.5">Current stage of the file. Changing this triggers automatic notifications to the buyer, seller, associates, and any connected channels — double check before saving.</p>
+              <p class="text-slate-500 italic" lang="es">Etapa actual del expediente. Cambiarla dispara notificaciones automáticas al comprador, vendedor, asociados y canales conectados — verifica antes de guardar.</p>
+            </div>
+          </span>
+        </label>
+        <select id="status" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+          <option>New</option>
+          <option>Active</option>
+          <option>Closed</option>
+          <option>Cancelled</option>
+        </select>
+      </div>
+
+      <!-- Field with hint, positioned to spill toward the right edge -->
+      <div>
+        <label for="branch" class="flex items-center text-sm font-medium text-slate-700 mb-1.5">
+          Branch
+          <span class="relative inline-block ml-1" data-controller="field-hint">
+            <button
+              type="button"
+              class="field-hint__trigger inline-flex items-center justify-center w-[18px] h-[18px] rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] leading-none hover:border-brand hover:text-brand transition"
+              aria-label="Field help"
+              aria-expanded="false"
+              data-field-hint-target="trigger"
+              data-action="field-hint#toggle"
+            >?</button>
+            <div
+              class="field-hint__panel hidden absolute z-20 top-6 left-0 w-64 p-3 bg-white border border-slate-200 rounded-lg shadow-lg text-sm"
+              data-field-hint-target="panel"
+            >
+              <p class="text-slate-800 mb-1.5">The branch this file belongs to. Cannot be changed after the file is created.</p>
+              <p class="text-slate-500 italic" lang="es">La sucursal a la que pertenece este expediente. No se puede cambiar después de creado.</p>
+            </div>
+          </span>
+        </label>
+        <select id="branch" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+          <option>Mérida</option>
+          <option>Cancún</option>
+          <option>Playa del Carmen</option>
+        </select>
+      </div>
+
+      <!-- Field with no hint registered, for comparison — no ? renders -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-slate-700 mb-1.5">Client name</label>
+        <input id="name" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
+      </div>
+
+    </form>
+  </div>
+
+  <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900">
+    <strong class="text-amber-950">Prototype notes:</strong>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>This file inlines what the real <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">field_hint</code> helper generates — in Rails it'd be one line: <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">&lt;%= field_hint("expediente.status") %&gt;</code>.</li>
+      <li>The toggle behavior below is plain JS standing in for the Stimulus controller (open/close, outside-click close, Escape close, aria-expanded sync) — identical logic, just not using the Stimulus runtime since this is a standalone file.</li>
+      <li>"Client name" has no hint content in the locale files, so the helper renders nothing — no orphaned ? icon.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+// Stand-in for the Stimulus field-hint controller — same open/close/outside-click/Escape logic.
+(function () {
+  document.querySelectorAll('[data-controller="field-hint"]').forEach((root) => {
+    const trigger = root.querySelector('[data-field-hint-target="trigger"]');
+    const panel = root.querySelector('[data-field-hint-target="panel"]');
+
+    function open() {
+      panel.classList.remove('hidden');
+      trigger.setAttribute('aria-expanded', 'true');
+      document.addEventListener('click', handleOutsideClick);
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    function close() {
+      panel.classList.add('hidden');
+      trigger.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('click', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    }
+
+    function handleOutsideClick(event) {
+      if (!root.contains(event.target)) close();
+    }
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') close();
+    }
+
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      panel.classList.contains('hidden') ? open() : close();
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
