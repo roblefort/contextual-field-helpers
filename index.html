@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Field Hint — Prototype (Tailwind 4)</title>
 
-<!-- Tailwind 4 via Play CDN, same approach as the Financial Overview prototype.
-     In the real codebase this is the compiled tailwindcss-rails v4.x stylesheet. -->
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 <style type="text/tailwindcss">
@@ -23,15 +21,23 @@
 
   <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8">
 
-    <h1 class="text-2xl font-semibold text-brand mb-1">New Expediente</h1>
-    <p class="text-sm text-slate-500 mb-8">Field hint prototype — click the ? icons.</p>
+    <!-- Language switch -->
+    <div class="flex justify-end mb-4">
+      <div class="inline-flex rounded-md border border-slate-300 overflow-hidden text-sm font-medium" role="group" aria-label="Language switch">
+        <button type="button" data-lang-switch="en" class="lang-btn px-3 py-1.5 bg-brand text-white transition">EN</button>
+        <button type="button" data-lang-switch="es" class="lang-btn px-3 py-1.5 bg-white text-slate-600 hover:bg-slate-50 transition">ES</button>
+      </div>
+    </div>
+
+    <h1 class="text-2xl font-semibold text-brand mb-1" data-i18n="heading">New Expediente</h1>
+    <p class="text-sm text-slate-500 mb-8" data-i18n="subheading">Field hint prototype — click the ? icons.</p>
 
     <form class="space-y-6">
 
       <!-- Field with hint -->
       <div>
         <label for="status" class="flex items-center text-sm font-medium text-slate-700 mb-1.5">
-          Status
+          <span data-i18n="status_label">Status</span>
           <span class="relative inline-block ml-1" data-controller="field-hint">
             <button
               type="button"
@@ -45,8 +51,8 @@
               class="field-hint__panel hidden absolute z-20 top-6 left-0 w-64 p-3 bg-white border border-slate-200 rounded-lg shadow-lg text-sm"
               data-field-hint-target="panel"
             >
-              <p class="text-slate-800 mb-1.5">Current stage of the file. Changing this triggers automatic notifications to the buyer, seller, associates, and any connected channels — double check before saving.</p>
-              <p class="text-slate-500 italic" lang="es">Etapa actual del expediente. Cambiarla dispara notificaciones automáticas al comprador, vendedor, asociados y canales conectados — verifica antes de guardar.</p>
+              <p class="text-slate-800 hint-text" data-lang="en">Current stage of the file. Changing this triggers automatic notifications to the buyer, seller, associates, and any connected channels — double check before saving.</p>
+              <p class="text-slate-800 hint-text hidden" data-lang="es">Etapa actual del expediente. Cambiarla dispara notificaciones automáticas al comprador, vendedor, asociados y canales conectados — verifica antes de guardar.</p>
             </div>
           </span>
         </label>
@@ -58,10 +64,10 @@
         </select>
       </div>
 
-      <!-- Field with hint, positioned to spill toward the right edge -->
+      <!-- Field with hint -->
       <div>
         <label for="branch" class="flex items-center text-sm font-medium text-slate-700 mb-1.5">
-          Branch
+          <span data-i18n="branch_label">Branch</span>
           <span class="relative inline-block ml-1" data-controller="field-hint">
             <button
               type="button"
@@ -75,8 +81,8 @@
               class="field-hint__panel hidden absolute z-20 top-6 left-0 w-64 p-3 bg-white border border-slate-200 rounded-lg shadow-lg text-sm"
               data-field-hint-target="panel"
             >
-              <p class="text-slate-800 mb-1.5">The branch this file belongs to. Cannot be changed after the file is created.</p>
-              <p class="text-slate-500 italic" lang="es">La sucursal a la que pertenece este expediente. No se puede cambiar después de creado.</p>
+              <p class="text-slate-800 hint-text" data-lang="en">The branch this file belongs to. Cannot be changed after the file is created.</p>
+              <p class="text-slate-800 hint-text hidden" data-lang="es">La sucursal a la que pertenece este expediente. No se puede cambiar después de creado.</p>
             </div>
           </span>
         </label>
@@ -89,7 +95,7 @@
 
       <!-- Field with no hint registered, for comparison — no ? renders -->
       <div>
-        <label for="name" class="block text-sm font-medium text-slate-700 mb-1.5">Client name</label>
+        <label for="name" class="block text-sm font-medium text-slate-700 mb-1.5" data-i18n="name_label">Client name</label>
         <input id="name" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
       </div>
 
@@ -99,17 +105,63 @@
   <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900">
     <strong class="text-amber-950">Prototype notes:</strong>
     <ul class="list-disc pl-5 mt-2 space-y-1">
-      <li>This file inlines what the real <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">field_hint</code> helper generates — in Rails it'd be one line: <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">&lt;%= field_hint("expediente.status") %&gt;</code>.</li>
-      <li>The toggle behavior below is plain JS standing in for the Stimulus controller (open/close, outside-click close, Escape close, aria-expanded sync) — identical logic, just not using the Stimulus runtime since this is a standalone file.</li>
-      <li>"Client name" has no hint content in the locale files, so the helper renders nothing — no orphaned ? icon.</li>
+      <li>Switching EN/ES at the top now re-renders the popups to show only that language — matching the page's active locale instead of stacking both languages.</li>
+      <li>The switch also re-renders page labels via a small <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">data-i18n</code> dictionary, standing in for what <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">I18n.locale</code> + normal Rails view translations would do server-side.</li>
+      <li><strong>Design change from the previous version:</strong> hints used to always show both languages in one panel. Now the popup content follows the page's selected locale, same as the rest of the UI. Say the word if you want the real helper/Stimulus controller updated to match this behavior.</li>
     </ul>
   </div>
 
 </div>
 
 <script>
-// Stand-in for the Stimulus field-hint controller — same open/close/outside-click/Escape logic.
 (function () {
+  const dictionary = {
+    en: {
+      heading: "New Expediente",
+      subheading: "Field hint prototype — click the ? icons.",
+      status_label: "Status",
+      branch_label: "Branch",
+      name_label: "Client name"
+    },
+    es: {
+      heading: "Nuevo Expediente",
+      subheading: "Prototipo de ayuda de campo — haz clic en los íconos ?.",
+      status_label: "Estatus",
+      branch_label: "Sucursal",
+      name_label: "Nombre del cliente"
+    }
+  };
+
+  let currentLang = "en";
+  const htmlRoot = document.getElementById("htmlRoot");
+  const langButtons = document.querySelectorAll(".lang-btn");
+
+  function applyLanguage(lang) {
+    currentLang = lang;
+    htmlRoot.setAttribute("lang", lang);
+
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (dictionary[lang][key]) el.textContent = dictionary[lang][key];
+    });
+
+    document.querySelectorAll(".hint-text").forEach((el) => {
+      el.classList.toggle("hidden", el.getAttribute("data-lang") !== lang);
+    });
+
+    langButtons.forEach((btn) => {
+      const isActive = btn.dataset.langSwitch === lang;
+      btn.classList.toggle("bg-brand", isActive);
+      btn.classList.toggle("text-white", isActive);
+      btn.classList.toggle("bg-white", !isActive);
+      btn.classList.toggle("text-slate-600", !isActive);
+    });
+  }
+
+  langButtons.forEach((btn) => {
+    btn.addEventListener("click", () => applyLanguage(btn.dataset.langSwitch));
+  });
+
   document.querySelectorAll('[data-controller="field-hint"]').forEach((root) => {
     const trigger = root.querySelector('[data-field-hint-target="trigger"]');
     const panel = root.querySelector('[data-field-hint-target="panel"]');
@@ -141,6 +193,8 @@
       panel.classList.contains('hidden') ? open() : close();
     });
   });
+
+  applyLanguage(currentLang);
 })();
 </script>
 
