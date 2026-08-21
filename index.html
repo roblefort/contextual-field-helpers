@@ -1,201 +1,543 @@
-<!DOCTYPE html>
-<html lang="en" id="htmlRoot">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Field Hint — Prototype (Tailwind 4)</title>
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ahead field helpers</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <!-- Optional: description for SEO -->
+        <meta name="description" content="fied help" />
 
-<style type="text/tailwindcss">
-  @theme {
-    --color-brand: #088576;
-    --color-brand-dark: #066c61;
-    --color-brand-soft: #e0f0ed;
-  }
-</style>
-</head>
-<body class="bg-slate-100 text-slate-800 p-6">
+        <!-- Optional: basic styling reset -->
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+            .fh-demo {
+                --c-bg: #ffffff;
+                --c-bg2: #f5f5f4;
+                --c-bg3: #eff6ff;
+                --c-border: #d1d5db;
+                --c-border2: #93c5fd;
+                --c-text: #111827;
+                --c-text2: #6b7280;
+                --c-text3: #9ca3af;
+                --c-info-text: #1d4ed8;
+                --c-info-bg: #eff6ff;
+                --c-info-border: #93c5fd;
+                --c-accent: #3b82f6;
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 14px;
+                color: var(--c-text);
+                padding: 1.5rem;
+                max-width: 560px;
+                background: var(--c-bg);
+            }
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                border: 0;
+            }
+            .fh-controls {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 1.75rem;
+                flex-wrap: wrap;
+            }
+            .fh-ctl-label {
+                font-size: 12px;
+                color: var(--c-text3);
+                margin-right: 2px;
+            }
+            .fh-pill {
+                padding: 5px 14px;
+                border-radius: 999px;
+                border: 1px solid var(--c-border);
+                background: var(--c-bg);
+                color: var(--c-text2);
+                font-size: 13px;
+                cursor: pointer;
+                transition: all 0.15s;
+                font-family: inherit;
+            }
+            .fh-pill:hover {
+                border-color: var(--c-accent);
+                color: var(--c-accent);
+            }
+            .fh-pill.on {
+                background: var(--c-info-bg);
+                color: var(--c-info-text);
+                border-color: var(--c-info-border);
+                font-weight: 500;
+            }
+            .fh-sep {
+                width: 1px;
+                height: 20px;
+                background: var(--c-border);
+                margin: 0 4px;
+            }
+            .fh-field {
+                margin-bottom: 1.25rem;
+            }
+            .fh-label-row {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                margin-bottom: 6px;
+            }
+            .fh-label-text {
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--c-text2);
+            }
+            .fh-btn {
+                width: 17px;
+                height: 17px;
+                border-radius: 50%;
+                border: 1px solid var(--c-border);
+                background: var(--c-info-bg);
+                color: var(--c-info-text);
+                font-size: 10px;
+                font-style: normal;
+                font-weight: 600;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                transition: all 0.15s;
+                padding: 0;
+                line-height: 1;
+                font-family: inherit;
+            }
+            .fh-btn:hover,
+            .fh-btn.open {
+                background: var(--c-info-bg);
+                border-color: var(--c-info-border);
+                color: var(--c-info-text);
+            }
+            .fh-panel {
+                display: none;
+                margin-bottom: 8px;
+                padding: 10px 13px 10px 13px;
+                background: var(--c-bg2);
+                border-radius: 8px;
+                border-left: 3px solid var(--c-accent);
+                animation: fhIn 0.15s ease;
+                position: relative;
+            }
+            @keyframes fhIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-4px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .fh-panel.open {
+                display: block;
+            }
+            .fh-panel-head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 4px;
+            }
+            .fh-panel-title {
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--c-text2);
+            }
+            .fh-close {
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+                border: 1px solid var(--c-border);
+                background: var(--c-bg);
+                color: var(--c-text3);
+                font-size: 12px;
+                line-height: 1;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                padding: 0;
+                font-family: inherit;
+                transition: all 0.15s;
+            }
+            .fh-close:hover {
+                background: var(--c-info-bg);
+                border-color: var(--c-info-border);
+                color: var(--c-info-text);
+            }
+            .fh-panel-body {
+                font-size: 13px;
+                color: var(--c-text);
+                line-height: 1.55;
+            }
+            .fh-panel-ex {
+                margin-top: 7px;
+                font-size: 12px;
+                color: var(--c-text2);
+                padding: 5px 9px;
+                background: var(--c-bg);
+                border-radius: 6px;
+                border: 1px solid var(--c-border);
+            }
+            .fh-panel-ex b {
+                color: var(--c-info-text);
+                font-weight: 500;
+            }
+            .fh-input,
+            .fh-select {
+                width: 100%;
+                padding: 8px 11px;
+                border-radius: 8px;
+                border: 1px solid var(--c-border);
+                background: var(--c-bg);
+                color: var(--c-text);
+                font-size: 14px;
+                font-family: inherit;
+                transition:
+                    border-color 0.15s,
+                    box-shadow 0.15s;
+            }
+            .fh-input:focus,
+            .fh-select:focus {
+                outline: none;
+                border-color: var(--c-accent);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+            }
+            .fh-input::placeholder {
+                color: var(--c-text3);
+            }
+            .fh-hr {
+                border: none;
+                border-top: 1px solid var(--c-border);
+                margin: 1.75rem 0;
+            }
+            .fh-footer {
+                font-size: 12px;
+                color: var(--c-text3);
+                line-height: 1.55;
+            }
+            .fh-footer code {
+                background: var(--c-bg2);
+                padding: 1px 5px;
+                border-radius: 4px;
+                font-size: 11px;
+                color: var(--c-text2);
+            }
+        </style>
+    </head>
+    <body>
+        <h2 class="sr-only">
+            Interactive bilingual field helper demo for a Rails form
+        </h2>
 
-<div class="max-w-2xl mx-auto">
-
-  <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8">
-
-    <!-- Language switch -->
-    <div class="flex justify-end mb-4">
-      <div class="inline-flex rounded-md border border-slate-300 overflow-hidden text-sm font-medium" role="group" aria-label="Language switch">
-        <button type="button" data-lang-switch="en" class="lang-btn px-3 py-1.5 bg-brand text-white transition">EN</button>
-        <button type="button" data-lang-switch="es" class="lang-btn px-3 py-1.5 bg-white text-slate-600 hover:bg-slate-50 transition">ES</button>
-      </div>
-    </div>
-
-    <h1 class="text-2xl font-semibold text-brand mb-1" data-i18n="heading">New Expediente</h1>
-    <p class="text-sm text-slate-500 mb-8" data-i18n="subheading">Field hint prototype — click the ? icons.</p>
-
-    <form class="space-y-6">
-
-      <!-- Field with hint -->
-      <div>
-        <label for="status" class="flex items-center text-sm font-medium text-slate-700 mb-1.5">
-          <span data-i18n="status_label">Status</span>
-          <span class="relative inline-block ml-1" data-controller="field-hint">
-            <button
-              type="button"
-              class="field-hint__trigger inline-flex items-center justify-center w-[18px] h-[18px] rounded-full border border-slate-200 bg-slate-200 text-slate-500 text-[11px] leading-none hover:border-brand hover:text-brand transition"
-              aria-label="Field help"
-              aria-expanded="false"
-              data-field-hint-target="trigger"
-              data-action="field-hint#toggle"
-            >?</button>
-            <div
-              class="field-hint__panel hidden absolute z-20 top-6 left-0 w-64 p-3 bg-slate-50 border border-slate-300 rounded-lg shadow-lg text-sm"
-              data-field-hint-target="panel"
-            >
-              <p class="text-slate-500 text-xs hint-text" data-lang="en">Current stage of the file. Changing this triggers automatic notifications to the buyer, seller, associates, and any connected channels — double check before saving.</p>
-              <p class="text-slate-500 text-xs hint-text hidden" data-lang="es">Etapa actual del expediente. Cambiarla dispara notificaciones automáticas al comprador, vendedor, asociados y canales conectados — verifica antes de guardar.</p>
+        <div class="fh-demo" id="fh-root">
+            <div class="fh-controls">
+                <span class="fh-ctl-label">Language:</span>
+                <button class="fh-pill on" id="btn-en" onclick="setLang('en')">
+                    English
+                </button>
+                <button class="fh-pill" id="btn-es" onclick="setLang('es')">
+                    Español
+                </button>
             </div>
-          </span>
-        </label>
-        <select id="status" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
-          <option>New</option>
-          <option>Active</option>
-          <option>Closed</option>
-          <option>Cancelled</option>
-        </select>
-      </div>
 
-      <!-- Field with hint -->
-      <div>
-        <label for="branch" class="flex items-center text-sm font-medium text-slate-700 mb-1.5">
-          <span data-i18n="branch_label">Branch</span>
-          <span class="relative inline-block ml-1" data-controller="field-hint">
-            <button
-              type="button"
-              class="field-hint__trigger inline-flex items-center justify-center w-[18px] h-[18px] rounded-full border border-slate-300 bg-slate-200 text-slate-500 text-[11px] leading-none hover:border-brand hover:text-brand transition"
-              aria-label="Field help"
-              aria-expanded="false"
-              data-field-hint-target="trigger"
-              data-action="field-hint#toggle"
-            >?</button>
-            <div
-              class="field-hint__panel hidden absolute z-20 top-6 left-0 w-64 p-3 bg-slate-50 border border-slate-200 rounded-lg shadow-lg text-sm"
-              data-field-hint-target="panel"
-            >
-              <p class="text-slate-500 hint-text text-xs" data-lang="en">The branch this file belongs to. Cannot be changed after the file is created.</p>
-              <p class="text-slate-500 hint-text text-xs hidden" data-lang="es">La sucursal a la que pertenece este expediente. No se puede cambiar después de creado.</p>
+            <div class="fh-field">
+                <div class="fh-label-row">
+                    <span class="fh-label-text" id="lbl-rfc">RFC</span>
+                    <button
+                        class="fh-btn"
+                        id="btn-rfc"
+                        aria-label="Show hint for RFC"
+                        aria-expanded="false"
+                    >
+                        i
+                    </button>
+                </div>
+                <div class="fh-panel" id="panel-rfc" role="tooltip">
+                    <div class="fh-panel-head">
+                        <div class="fh-panel-title" id="ptit-rfc"></div>
+                        <button
+                            class="fh-close"
+                            onclick="hide('rfc')"
+                            aria-label="Close hint"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div class="fh-panel-body" id="pbod-rfc"></div>
+                    <div class="fh-panel-ex" id="pex-rfc"></div>
+                </div>
+                <input
+                    class="fh-input"
+                    type="text"
+                    placeholder="GOMC850101A12"
+                />
             </div>
-          </span>
-        </label>
-        <select id="branch" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
-          <option>Mérida</option>
-          <option>Cancún</option>
-          <option>Playa del Carmen</option>
-        </select>
-      </div>
 
-      <!-- Field with no hint registered, for comparison — no ? renders -->
-      <div>
-        <label for="name" class="block text-sm font-medium text-slate-700 mb-1.5" data-i18n="name_label">Client name</label>
-        <input id="name" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white text-sm text-slate-800 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15">
-      </div>
+            <div class="fh-field">
+                <div class="fh-label-row">
+                    <span class="fh-label-text" id="lbl-curp">CURP</span>
+                    <button
+                        class="fh-btn"
+                        id="btn-curp"
+                        aria-label="Show hint for CURP"
+                        aria-expanded="false"
+                    >
+                        i
+                    </button>
+                </div>
+                <div class="fh-panel" id="panel-curp" role="tooltip">
+                    <div class="fh-panel-head">
+                        <div class="fh-panel-title" id="ptit-curp"></div>
+                        <button
+                            class="fh-close"
+                            onclick="hide('curp')"
+                            aria-label="Close hint"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div class="fh-panel-body" id="pbod-curp"></div>
+                    <div class="fh-panel-ex" id="pex-curp"></div>
+                </div>
+                <input
+                    class="fh-input"
+                    type="text"
+                    placeholder="GOMC850101HDFNRR04"
+                />
+            </div>
 
-    </form>
-  </div>
+            <div class="fh-field">
+                <div class="fh-label-row">
+                    <span class="fh-label-text" id="lbl-notaria">Notaría</span>
+                    <button
+                        class="fh-btn"
+                        id="btn-notaria"
+                        aria-label="Show hint for Notaría"
+                        aria-expanded="false"
+                    >
+                        i
+                    </button>
+                </div>
+                <div class="fh-panel" id="panel-notaria" role="tooltip">
+                    <div class="fh-panel-head">
+                        <div class="fh-panel-title" id="ptit-notaria"></div>
+                        <button
+                            class="fh-close"
+                            onclick="hide('notaria')"
+                            aria-label="Close hint"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div class="fh-panel-body" id="pbod-notaria"></div>
+                    <div class="fh-panel-ex" id="pex-notaria"></div>
+                </div>
+                <select class="fh-select">
+                    <option value="">— Select —</option>
+                    <option>Notaría 1 — Mérida</option>
+                    <option>Notaría 8 — Mérida</option>
+                </select>
+            </div>
 
-  <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900">
-    <strong class="text-amber-950">Prototype notes:</strong>
-    <ul class="list-disc pl-5 mt-2 space-y-1">
-      <li>Switching EN/ES at the top now re-renders the popups to show only that language — matching the page's active locale instead of stacking both languages.</li>
-      <li>The switch also re-renders page labels via a small <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">data-i18n</code> dictionary, standing in for what <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">I18n.locale</code> + normal Rails view translations would do server-side.</li>
-    </ul>
-  </div>
+            <div class="fh-field">
+                <div class="fh-label-row">
+                    <span class="fh-label-text" id="lbl-folio">Folio</span>
+                    <button
+                        class="fh-btn"
+                        id="btn-folio"
+                        aria-label="Show hint for Folio"
+                        aria-expanded="false"
+                    >
+                        i
+                    </button>
+                </div>
+                <div class="fh-panel" id="panel-folio" role="tooltip">
+                    <div class="fh-panel-head">
+                        <div class="fh-panel-title" id="ptit-folio"></div>
+                        <button
+                            class="fh-close"
+                            onclick="hide('folio')"
+                            aria-label="Close hint"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div class="fh-panel-body" id="pbod-folio"></div>
+                    <div class="fh-panel-ex" id="pex-folio"></div>
+                </div>
+                <input class="fh-input" type="text" placeholder="e.g. 12345" />
+            </div>
 
-</div>
+            <hr class="fh-hr" />
+            <div class="fh-footer">
+                Hint content comes from your Rails i18n YAML files. The
+                <b style="font-weight: 500; color: #374151">ⓘ</b> icon is
+                rendered by a <code>field_hint(:key)</code> view helper backed
+                by a Stimulus controller.
+            </div>
+        </div>
 
-<script>
-(function () {
-  const dictionary = {
-    en: {
-      heading: "New Expediente",
-      subheading: "Field hint prototype — click the ? icons.",
-      status_label: "Status",
-      branch_label: "Branch",
-      name_label: "Client name"
-    },
-    es: {
-      heading: "Nuevo Expediente",
-      subheading: "Prototipo de ayuda de campo — haz clic en los íconos ?.",
-      status_label: "Estatus",
-      branch_label: "Sucursal",
-      name_label: "Nombre del cliente"
-    }
-  };
+        <script>
+            const T = {
+                en: {
+                    rfc: {
+                        label: "RFC",
+                        title: "Format",
+                        body: "Tax ID issued by SAT. 13 characters for individuals, 12 for companies.",
+                        ex: "<b>Individual:</b> GOMC850101A12 &nbsp;&nbsp; <b>Company:</b> TSM201501AB3",
+                    },
+                    curp: {
+                        label: "CURP",
+                        title: "Format",
+                        body: "Unique population registry code. 18 alphanumeric characters assigned at birth by RENAPO.",
+                        ex: "<b>Example:</b> GOMC850101HDFNRR04",
+                    },
+                    notaria: {
+                        label: "Notaría",
+                        title: "Required for deed",
+                        body: "Select the notary office that will formalize the transaction. Required before generating the escritura.",
+                        ex: "<b>Tip:</b> Leave blank if not yet assigned — update from the Expediente detail view.",
+                    },
+                    folio: {
+                        label: "Folio / Deed number",
+                        title: "Where to find it",
+                        body: "Sequential number assigned by the notary office at the time of signing.",
+                        ex: "<b>Also known as:</b> número de escritura or instrumento notarial",
+                    },
+                },
+                es: {
+                    rfc: {
+                        label: "RFC",
+                        title: "Formato",
+                        body: "Registro Federal de Contribuyentes emitido por el SAT. 13 caracteres para físicas; 12 para morales.",
+                        ex: "<b>Física:</b> GOMC850101A12 &nbsp;&nbsp; <b>Moral:</b> TSM201501AB3",
+                    },
+                    curp: {
+                        label: "CURP",
+                        title: "Formato",
+                        body: "Clave Única de Registro de Población. 18 caracteres alfanuméricos asignados al nacer por el RENAPO.",
+                        ex: "<b>Ejemplo:</b> GOMC850101HDFNRR04",
+                    },
+                    notaria: {
+                        label: "Notaría",
+                        title: "Requerida para escritura",
+                        body: "Selecciona la notaría que formalizará la operación. Se requiere antes de generar la escritura.",
+                        ex: "<b>Tip:</b> Déjala en blanco si no está asignada — actualiza desde el Expediente.",
+                    },
+                    folio: {
+                        label: "Folio / Núm. escritura",
+                        title: "Dónde encontrarlo",
+                        body: "Número secuencial asignado por la notaría al momento de la firma.",
+                        ex: "<b>También conocido como:</b> instrumento notarial o número de escritura",
+                    },
+                },
+            };
 
-  let currentLang = "en";
-  const htmlRoot = document.getElementById("htmlRoot");
-  const langButtons = document.querySelectorAll(".lang-btn");
+            const KEYS = ["rfc", "curp", "notaria", "folio"];
+            let lang = "en",
+                mode = "click",
+                openKey = null;
 
-  function applyLanguage(lang) {
-    currentLang = lang;
-    htmlRoot.setAttribute("lang", lang);
+            function render() {
+                KEYS.forEach((k) => {
+                    const h = T[lang][k];
+                    document.getElementById("lbl-" + k).textContent = h.label;
+                    document.getElementById("ptit-" + k).textContent = h.title;
+                    document.getElementById("pbod-" + k).textContent = h.body;
+                    document.getElementById("pex-" + k).innerHTML = h.ex;
+                });
+            }
 
-    document.querySelectorAll("[data-i18n]").forEach((el) => {
-      const key = el.getAttribute("data-i18n");
-      if (dictionary[lang][key]) el.textContent = dictionary[lang][key];
-    });
+            function show(k) {
+                if (openKey && openKey !== k) hide(openKey);
+                document.getElementById("panel-" + k).classList.add("open");
+                const btn = document.getElementById("btn-" + k);
+                btn.classList.add("open");
+                btn.setAttribute("aria-expanded", "true");
+                openKey = k;
+            }
 
-    document.querySelectorAll(".hint-text").forEach((el) => {
-      el.classList.toggle("hidden", el.getAttribute("data-lang") !== lang);
-    });
+            function hide(k) {
+                document.getElementById("panel-" + k).classList.remove("open");
+                const btn = document.getElementById("btn-" + k);
+                btn.classList.remove("open");
+                btn.setAttribute("aria-expanded", "false");
+                if (openKey === k) openKey = null;
+            }
 
-    langButtons.forEach((btn) => {
-      const isActive = btn.dataset.langSwitch === lang;
-      btn.classList.toggle("bg-brand", isActive);
-      btn.classList.toggle("text-white", isActive);
-      btn.classList.toggle("bg-white", !isActive);
-      btn.classList.toggle("text-slate-600", !isActive);
-    });
-  }
+            function hideAll() {
+                if (openKey) hide(openKey);
+            }
 
-  langButtons.forEach((btn) => {
-    btn.addEventListener("click", () => applyLanguage(btn.dataset.langSwitch));
-  });
+            KEYS.forEach((k) => {
+                const btn = document.getElementById("btn-" + k);
+                btn.addEventListener("mouseenter", () => {
+                    if (mode === "hover") show(k);
+                });
+                btn.addEventListener("mouseleave", () => {
+                    if (mode === "hover") hide(k);
+                });
+                btn.addEventListener("click", (e) => {
+                    if (mode === "click") {
+                        e.stopPropagation();
+                        openKey === k ? hide(k) : show(k);
+                    }
+                });
+            });
 
-  document.querySelectorAll('[data-controller="field-hint"]').forEach((root) => {
-    const trigger = root.querySelector('[data-field-hint-target="trigger"]');
-    const panel = root.querySelector('[data-field-hint-target="panel"]');
+            document.addEventListener("click", (e) => {
+                if (mode === "click" && openKey) {
+                    const panel = document.getElementById("panel-" + openKey);
+                    if (!panel.contains(e.target)) hideAll();
+                }
+            });
 
-    function open() {
-      panel.classList.remove('hidden');
-      trigger.setAttribute('aria-expanded', 'true');
-      document.addEventListener('click', handleOutsideClick);
-      document.addEventListener('keydown', handleEscape);
-    }
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && openKey) hideAll();
+            });
 
-    function close() {
-      panel.classList.add('hidden');
-      trigger.setAttribute('aria-expanded', 'false');
-      document.removeEventListener('click', handleOutsideClick);
-      document.removeEventListener('keydown', handleEscape);
-    }
+            function setLang(l) {
+                lang = l;
+                ["en", "es"].forEach((x) =>
+                    document
+                        .getElementById("btn-" + x)
+                        .classList.toggle("on", x === l),
+                );
+                render();
+            }
 
-    function handleOutsideClick(event) {
-      if (!root.contains(event.target)) close();
-    }
+            function setMode(m) {
+                mode = m;
+                hideAll();
+                ["hover", "click"].forEach((x) =>
+                    document
+                        .getElementById("mode-" + x)
+                        .classList.toggle("on", x === m),
+                );
+            }
 
-    function handleEscape(event) {
-      if (event.key === 'Escape') close();
-    }
-
-    trigger.addEventListener('click', (event) => {
-      event.stopPropagation();
-      panel.classList.contains('hidden') ? open() : close();
-    });
-  });
-
-  applyLanguage(currentLang);
-})();
-</script>
-
-</body>
+            render();
+        </script>
+    </body>
 </html>
