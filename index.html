@@ -17,7 +17,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 p-6">
 
-<div class="max-w-2xl mx-auto">
+<div class="mx-auto max-w-[1024px]">
 
   <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6 md:p-8">
 
@@ -31,7 +31,7 @@
     <h1 class="text-2xl font-semibold text-brand mb-1" data-i18n="heading">New Expediente</h1>
     <p class="text-sm text-slate-500 mb-8" data-i18n="subheading">Field hint prototype - click the ? icons.</p>
 
-    <form class="space-y-6">
+    <form class="grid grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2">
 
       <div class="field-hint" data-controller="field-hint">
         <label for="status" class="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
@@ -113,13 +113,47 @@
         <input id="name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15">
       </div>
 
+      <div class="field-hint" data-controller="field-hint">
+        <label for="file-number" class="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+          <span data-i18n="file_number_label">File number</span>
+          <button
+            type="button"
+            class="field-hint__trigger inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand-soft text-[11px] font-semibold leading-none text-brand transition hover:border-brand hover:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20"
+            aria-label="Field help"
+            aria-expanded="false"
+            aria-controls="file-number-hint"
+            data-field-hint-target="trigger"
+            data-action="field-hint#toggle"
+          >?</button>
+        </label>
+        <div
+          id="file-number-hint"
+          class="field-hint__panel mb-2 hidden rounded-lg border border-slate-200 border-l-[3px] border-l-brand bg-slate-50 px-3 py-2.5 text-sm shadow-sm"
+          role="region"
+          data-field-hint-target="panel"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="mb-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500" data-i18n="file_number_hint_title">Internal reference</p>
+              <p class="text-xs leading-5 text-slate-700 hint-text" data-lang="en">Use the internal file number assigned by the office. Keep it consistent with existing folders and document names.</p>
+              <p class="hidden text-xs leading-5 text-slate-700 hint-text" data-lang="es">Usa el número interno asignado por la oficina. Manténlo consistente con carpetas y nombres de documentos existentes.</p>
+              <p class="mt-2 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs leading-5 text-slate-500 hint-text" data-lang="en"><strong class="font-medium text-brand">Example:</strong> 2026-0142</p>
+              <p class="mt-2 hidden rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs leading-5 text-slate-500 hint-text" data-lang="es"><strong class="font-medium text-brand">Ejemplo:</strong> 2026-0142</p>
+            </div>
+            <button type="button" class="field-hint__close inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm leading-none text-slate-400 transition hover:border-brand/40 hover:bg-brand-soft hover:text-brand" aria-label="Close hint" data-action="field-hint#close">&times;</button>
+          </div>
+        </div>
+        <input id="file-number" type="text" placeholder="2026-0142" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15">
+      </div>
+
     </form>
   </div>
 
   <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
     <strong class="text-amber-950">Prototype notes:</strong>
     <ul class="list-disc pl-5 mt-2 space-y-1">
-      <li>This uses the Rails-friendly Tailwind and Stimulus structure.</li>
+      <li>This uses the Rails-friendly Tailwind and Stimulus structure in a 1024px-wide card.</li>
+      <li>The fields are arranged as a responsive 2x2 grid on desktop and collapse to one column on small screens.</li>
       <li>The hint window uses inline css popover style: title, body, example note, and close button.</li>
       <li>To close a popover, click the close button, click outside the popover, or press the escape key.</li>
       <li>In Rails, the localized help text comes from translation files instead of rendering both languages client-side.</li>
@@ -137,8 +171,10 @@
       status_label: "Status",
       branch_label: "Branch",
       name_label: "Client name",
+      file_number_label: "File number",
       status_hint_title: "Careful with notifications",
-      branch_hint_title: "Ownership"
+      branch_hint_title: "Ownership",
+      file_number_hint_title: "Internal reference"
     },
     es: {
       heading: "Nuevo Expediente",
@@ -146,8 +182,10 @@
       status_label: "Estatus",
       branch_label: "Sucursal",
       name_label: "Nombre del cliente",
+      file_number_label: "Número de expediente",
       status_hint_title: "Cuidado con notificaciones",
-      branch_hint_title: "Propiedad"
+      branch_hint_title: "Propiedad",
+      file_number_hint_title: "Referencia interna"
     }
   };
 
